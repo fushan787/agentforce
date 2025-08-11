@@ -15,6 +15,10 @@
 		try {
 			embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
 
+			window.addEventListener("onEmbeddedMessagingReady", e => {
+				embeddedservice_bootstrap.prechatAPI.setVisiblePrechatFields({"customerEmail": "fushan01@test.com"});
+			});
+
 			embeddedservice_bootstrap.init(
 				'00DgK000000ekvN',
 				'Service_Agent_Case_Github',
