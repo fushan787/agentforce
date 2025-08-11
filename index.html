@@ -9,28 +9,26 @@
     </head>
     <body>
         <h1>Embedded Messaging</h1>
-        <script type="text/javascript">
-            function initEmbeddedMessaging() {
-                try {
-                    embeddedservice_bootstrap.settings.language = "en_US"; // For example, enter 'en' or 'en-US'
+     
+        <script type='text/javascript'>
+	function initEmbeddedMessaging() {
+		try {
+			embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
 
-                    embeddedservice_bootstrap.init(
-                        "00DgK000000ekvN",
-                        "Service_Agent_Channel",
-                        "https://orgfarm-be49e4535e-dev-ed.develop.my.site.com/ESWServiceAgentChannel1754136866610",
-                        {
-                            scrt2URL:
-                                "https://orgfarm-be49e4535e-dev-ed.develop.my.salesforce-scrt.com",
-                        }
-                    );
-                } catch (err) {
-                    console.error("Error loading Embedded Messaging: ", err);
-                }
-            }
-        </script>
-        <script
-            type="text/javascript"
-            src="https://orgfarm-be49e4535e-dev-ed.develop.my.site.com/ESWServiceAgentChannel1754136866610/assets/js/bootstrap.min.js"
-            onload="initEmbeddedMessaging()"></script>
+			embeddedservice_bootstrap.init(
+				'00DgK000000ekvN',
+				'Service_Agent_Case_Github',
+				'https://orgfarm-be49e4535e-dev-ed.develop.my.site.com/ESWServiceAgentCaseGit1754901077757',
+				{
+					scrt2URL: 'https://orgfarm-be49e4535e-dev-ed.develop.my.salesforce-scrt.com'
+				}
+			);
+		} catch (err) {
+			console.error('Error loading Embedded Messaging: ', err);
+		}
+	};
+</script>
+<script type='text/javascript' src='https://orgfarm-be49e4535e-dev-ed.develop.my.site.com/ESWServiceAgentCaseGit1754901077757/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
+
     </body>
 </html>
