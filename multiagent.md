@@ -55,46 +55,6 @@
 
 ---
 
-## 🧠 シーケンス図
-
-```mermaid
-sequenceDiagram
-    autonumber
-    participant Customer as 👤 顧客
-    participant ASA as ① ASA<br>(Agentforce Service Agent)
-    participant Supervisor as ② Supervisor Agent<br>(司令塔)
-    participant CaseMaster as ③ Case Master Agent<br>(Salesforceケース管理)
-    participant Research as ④ Research Agent<br>(外部ナレッジ検索)
-    participant Notifier as ⑤ Notifier Agent<br>(通知・メール送信)
-
-    %% --- ステップ1 ---
-    Customer->>ASA: チャット開始・問い合わせ内容を送信
-    ASA->>Customer: 挨拶とヒアリング開始
-    ASA->>ASA: 顧客情報と課題を構造化データとして整理
-
-    %% --- ステップ2 ---
-    ASA->>Supervisor: ヒアリング結果を引き渡し
-    Supervisor->>CaseMaster: ケース登録を指示
-    CaseMaster->>Supervisor: Salesforce上でケース作成完了（ケース番号返却）
-
-    %% --- ステップ3 ---
-    Supervisor->>Research: 外部ナレッジの調査依頼
-    Research->>Research: Web検索・要約生成
-    Research-->>Supervisor: 要約結果を返却
-    Supervisor->>ASA: 回答案を渡す
-    ASA->>Customer: 回答を自然な文章で提示
-
-    %% --- ステップ4 ---
-    Customer->>ASA: 解決に同意
-    ASA->>Supervisor: ケースクローズ報告
-    Supervisor->>CaseMaster: ケースクローズ指示
-    CaseMaster->>Supervisor: クローズ完了報告
-    Supervisor->>Notifier: 解決通知メール送信を依頼
-    Notifier->>Customer: 解決通知＆御礼メール送信
-
-    Note over ASA,Notifier: 各エージェントはSupervisor Agentを中心に協調動作し、<br>顧客体験をパーソナライズして最適化。
-```
-
 ## 🧠 構成図
 ```mermaid
 graph TD
@@ -156,61 +116,42 @@ graph TD
 ```
 
 ## 🧠 シーケンス図
+
 ```mermaid
-graph TD
-    subgraph "顧客との接点"
-        Customer(fa:fa-user 顧客)
-        ASA(fa:fa-headset ① ASA<br>Agentforce Service Agent)
-    end
+sequenceDiagram
+    autonumber
+    participant Customer as 👤 顧客
+    participant ASA as ① ASA<br>(Agentforce Service Agent)
+    participant Supervisor as ② Supervisor Agent<br>(司令塔)
+    participant CaseMaster as ③ Case Master Agent<br>(Salesforceケース管理)
+    participant Research as ④ Research Agent<br>(外部ナレッジ検索)
+    participant Notifier as ⑤ Notifier Agent<br>(通知・メール送信)
 
-    subgraph "司令塔"
-        Supervisor(fa:fa-sitemap ② Supervisor Agent)
-    end
+    %% --- ステップ1 ---
+    Customer->>ASA: チャット開始・問い合わせ内容を送信
+    ASA->>Customer: 挨拶とヒアリング開始
+    ASA->>ASA: 顧客情報と課題を構造化データとして整理
 
-    subgraph "専門エージェントチーム（デジタル専門家チーム）"
-        CaseMaster(fa:fa-database ③ Case Master Agent)
-        Research(fa:fa-search ④ Research Agent)
-        Notifier(fa:fa-envelope ⑤ Notifier Agent)
-    end
+    %% --- ステップ2 ---
+    ASA->>Supervisor: ヒアリング結果を引き渡し
+    Supervisor->>CaseMaster: ケース登録を指示
+    CaseMaster->>Supervisor: Salesforce上でケース作成完了（ケース番号返却）
 
-    subgraph "外部システム"
-        Salesforce[(fa:fa-cloud Salesforce)]
-        Web[(fa:fa-globe Webナレッジ)]
-    end
+    %% --- ステップ3 ---
+    Supervisor->>Research: 外部ナレッジの調査依頼
+    Research->>Research: Web検索・要約生成
+    Research-->>Supervisor: 要約結果を返却
+    Supervisor->>ASA: 回答案を渡す
+    ASA->>Customer: 回答を自然な文章で提示
 
-    %% ステップ1：チャット受付とヒアリング
-    Customer -- 1. チャットで問い合わせ --> ASA
-    ASA -- 2. ヒアリングと情報整理 --> Supervisor
+    %% --- ステップ4 ---
+    Customer->>ASA: 解決に同意
+    ASA->>Supervisor: ケースクローズ報告
+    Supervisor->>CaseMaster: ケースクローズ指示
+    CaseMaster->>Supervisor: クローズ完了報告
+    Supervisor->>Notifier: 解決通知メール送信を依頼
+    Notifier->>Customer: 解決通知＆御礼メール送信
 
-    %% ステップ2：タスクの振り分けとケース起票
-    Supervisor -- 3. [判断] 新規ケース登録<br>顧客情報を渡し、作成を指示 --> CaseMaster
-    CaseMaster -- 4. ケースを作成 --> Salesforce
-    Salesforce -- 5. ケース番号を返却 --> CaseMaster
-    CaseMaster -- 6. ケース番号を報告 --> Supervisor
-
-    %% ステップ3：Webナレッジの検索と回答生成
-    Supervisor -- 7. [判断] 外部情報が必要<br>調査を依頼 --> Research
-    Research -- 8. Web検索と要約 --> Web
-    Research -- 9. 要約結果を返却 --> Supervisor
-    Supervisor -- 10. 回答案を生成し、ASAに渡す --> ASA
-    ASA -- 11. 顧客に回答を提示 --> Customer
-
-    %% ステップ4：ケースクローズと解決後通知
-    Customer -- 12. 問題解決に同意 --> ASA
-    ASA -- 13. 解決を報告 --> Supervisor
-    Supervisor -- 14. ケースクローズを指示 --> CaseMaster
-    CaseMaster -- 15. ケースをクローズ --> Salesforce
-    Supervisor -- 16. 解決通知を依頼 --> Notifier
-    Notifier -- 17. 御礼メールを送信 --> Customer
-
-    %% スタイリング
-    classDef supervisor fill:#ff9900,color:#fff,stroke:#333,stroke-width:2px
-    classDef agent fill:#e0f7fa,color:#000,stroke:#00796b,stroke-width:1px
-    classDef customer fill:#fce4ec,color:#000,stroke:#c2185b,stroke-width:1px
-    classDef external fill:#f5f5f5,color:#000,stroke:#616161,stroke-width:1px
-
-    class Supervisor supervisor
-    class ASA,CaseMaster,Research,Notifier agent
-    class Customer customer
-    class Salesforce,Web external
+    Note over ASA,Notifier: 各エージェントはSupervisor Agentを中心に協調動作し、<br>顧客体験をパーソナライズして最適化。
 ```
+
