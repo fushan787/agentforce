@@ -122,6 +122,7 @@ style Customer fill:#e2e8f0,stroke:#4a5568,stroke-width:1px
 
 ## 🧠 シーケンス図
 
+
 ```mermaid
 sequenceDiagram
     autonumber
