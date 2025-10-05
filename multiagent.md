@@ -56,55 +56,54 @@
 ---
 
 graph TD
-    subgraph "顧客"
-        Customer((顧客))
+    %% 設定とスタイル定義
+    classDef agent fill:#e0f7fa,stroke:#00bcd4,stroke-width:2px;
+    classDef system fill:#fff3e0,stroke:#ff9800,stroke-width:2px;
+    classDef final fill:#c8e6c9,stroke:#4caf50,stroke-width:2px;
+
+    subgraph 顧客インターフェース
+        User[顧客]
+        A[① ASA (Agentforce Service Agent)]:::agent
     end
 
-    subgraph "デジタル専門家チーム"
-        ASA["① ASA<br/>(対話担当)"]
-        Supervisor{"② Supervisor Agent<br/>(司令塔)"}
-        CaseMaster["③ Case Master Agent<br/>(Salesforce担当)"]
-        Research["④ Research Agent<br/>(Web検索担当)"]
-        Notifier["⑤ Notifier Agent<br/>(通知担当)"]
+    subgraph 協調・制御コア
+        B[② Supervisor Agent (司令塔)]:::agent
     end
 
-    subgraph "外部システム"
-        SalesforceDB[(Salesforce)]
-        WebSource[(Web)]
+    subgraph Salesforce連携レイヤ
+        C[③ Case Master Agent]:::agent
+        SF((Salesforce)):::system
     end
 
-    %% --- 処理フロー ---
+    subgraph 外部リソース連携
+        D[④ Research Agent]:::agent
+        E[⑤ Notifier Agent]:::agent
+        Web{Webサイト / 外部ナレッジ}:::system
+    end
 
-    %% ステップ1：チャット受付とヒアリング
-    Customer -- 1. チャット問合せ --> ASA;
-    ASA -- 2. ヒアリング内容を連携 --> Supervisor;
+    %% ステップ1: チャット受付とヒアリング
+    User -- S1: 1.チャット開始 --> A
+    A -- S1: 2.課題・要件のヒアリング --> A
+    A -- S2: 3.ヒアリング完了 --> B
 
-    %% ステップ2：タスクの振り分けとケース起票
-    Supervisor -- 3. ケース作成を指示 --> CaseMaster;
-    CaseMaster -- 4. Salesforceにケース登録 --> SalesforceDB;
-    SalesforceDB -- 5. ケース番号を返却 --> CaseMaster;
-    CaseMaster -- 6. ケース番号を報告 --> Supervisor;
+    %% ステップ2: タスクの振り分けとケース起票
+    B -- S2: 4.新規ケース登録を指示 --> C
+    C -- S2: 5.ケース作成/データ送信 --> SF
+    SF -- S2: 6.ケース作成完了 (CASE-XXX) --> C
+    C -- S2: 7.ケース番号を返却 --> B
 
-    %% ステップ3：Webナレッジの検索と回答生成
-    Supervisor -- 7. 調査を依頼 --> Research;
-    Research -- 8. Webを検索 --> WebSource;
-    WebSource -- 9. 関連情報を収集 --> Research;
-    Research -- 10. 要約ナレッジを報告 --> Supervisor;
-    Supervisor -- 11. 回答案を連携 --> ASA;
-    ASA -- 12. 顧客へ回答 --> Customer;
+    %% ステップ3: Webナレッジの検索と回答生成
+    B -- S3: 8.Webナレッジ調査を依頼 --> D
+    D -- S3: 9.指定キーワードで検索 --> Web
+    Web -- S3: 9.検索結果取得 --> D
+    D -- S3: 10.収集・要約したナレッジを返却 --> B
+    B -- S3: 11.回答案を提示 --> A
+    A -- S3: 12.自然な文章で回答 --> User
 
-    %% ステップ4：ケースクローズと解決後通知
-    Customer -- 13. 問題解決に同意 --> ASA;
-    ASA -- 14. 解決を報告 --> Supervisor;
-    Supervisor -- 15. ケースクローズを指示 --> CaseMaster;
-    CaseMaster -- 16. Salesforceのケースを更新 --> SalesforceDB;
-    Supervisor -- 17. 解決通知を依頼 --> Notifier;
-    Notifier -- 18. 御礼メールを送信 --> Customer;
-
-    %% --- スタイル定義 ---
-    style Supervisor fill:#ffc8dd,stroke:#333,stroke-width:2px
-    style ASA fill:#c8e6ff,stroke:#333,stroke-width:2px
-    style CaseMaster fill:#b9e7e7,stroke:#333,stroke-width:2px
-    style Research fill:#ffedc8,stroke:#333,stroke-width:2px
-    style Notifier fill:#d8f8d8,stroke:#333,stroke-width:2px
-    style Customer fill:#ffffd0,stroke:#333,stroke-width:2px
+    %% ステップ4: ケースクローズと解決後通知
+    User -- S4: 13.問題解決に同意 --> A
+    A -- S4: 14.解決同意を報告 --> B
+    B -- S4: 15.ケースクローズを指示 --> C
+    C -- S4: 16.ケースをクローズ処理 --> SF
+    B -- S4: 17.解決通知メール送信を依頼 --> E
+    E -- S4: 18.御礼/解決通知メール送信 --> User
