@@ -95,6 +95,7 @@ sequenceDiagram
     Note over ASA,Notifier: 各エージェントはSupervisor Agentを中心に協調動作し、<br>顧客体験をパーソナライズして最適化。
 
 
+```mermaid
 graph TD
     subgraph "顧客との接点"
         Customer(fa:fa-user 顧客)
