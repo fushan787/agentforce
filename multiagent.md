@@ -58,55 +58,67 @@
 ## 🧠 構成図
 
 ```mermaid
-graph TD
-    subgraph "顧客"
-        Customer((顧客))
-    end
+flowchart TD
 
-    subgraph "デジタル専門家チーム"
-        ASA["① ASA\n(対話担当)"]
-        Supervisor{"② Supervisor Agent\n(司令塔)"}
-        CaseMaster["③ Case Master Agent\n(Salesforce担当)"]
-        Research["④ Research Agent\n(Web検索担当)"]
-        Notifier["⑤ Notifier Agent\n(通知担当)"]
-    end
+%% =========================
+%% ノード定義
+%% =========================
 
-    subgraph "外部システム"
-        SalesforceDB[(Salesforce)]
-        WebSource[(Web)]
-    end
+subgraph Customer["👤 顧客"]
+    A0["チャット開始"]
+end
 
-    %% --- 処理フロー ---
+subgraph ASA["① ASA (Agentforce Service Agent)"]
+    A1["課題ヒアリング<br/>顧客情報を収集"]
+    A2["Supervisor Agentへ転送"]
+    A3["回答提示・解決確認"]
+end
 
-    Customer -- "1. チャット問合せ" --> ASA
-    ASA -- "2. ヒアリング内容を連携" --> Supervisor
+subgraph Supervisor["② Supervisor Agent"]
+    S1["タスク分析・判断"]
+    S2["Case Masterへケース作成指示"]
+    S3["Research Agentへ調査依頼"]
+    S4["Notifier Agentへ通知依頼"]
+end
 
-    Supervisor -- "3. ケース作成を指示" --> CaseMaster
-    CaseMaster -- "4. Salesforceにケース登録" --> SalesforceDB
-    SalesforceDB -- "5. ケース番号を返却" --> CaseMaster
-    CaseMaster -- "6. ケース番号を報告" --> Supervisor
+subgraph CaseMaster["③ Case Master Agent"]
+    C1["Salesforce上で<br/>ケース作成"]
+    C2["ケースクローズ"]
+end
 
-    Supervisor -- "7. 調査を依頼" --> Research
-    Research -- "8. Webを検索" --> WebSource
-    WebSource -- "9. 関連情報を収集" --> Research
-    Research -- "10. 要約ナレッジを報告" --> Supervisor
-    Supervisor -- "11. 回答案を連携" --> ASA
-    ASA -- "12. 顧客へ回答" --> Customer
+subgraph Research["④ Research Agent"]
+    R1["Webナレッジ検索・要約"]
+end
 
-    Customer -- "13. 問題解決に同意" --> ASA
-    ASA -- "14. 解決を報告" --> Supervisor
-    Supervisor -- "15. ケースクローズを指示" --> CaseMaster
-    CaseMaster -- "16. Salesforceのケースを更新" --> SalesforceDB
-    Supervisor -- "17. 解決通知を依頼" --> Notifier
-    Notifier -- "18. 御礼メールを送信" --> Customer
+subgraph Notifier["⑤ Notifier Agent"]
+    N1["解決通知メール送信"]
+end
 
-    %% --- スタイル定義 ---
-    style Supervisor fill:#ffc8dd,stroke:#333,stroke-width:2px
-    style ASA fill:#c8e6ff,stroke:#333,stroke-width:2px
-    style CaseMaster fill:#b9e7e7,stroke:#333,stroke-width:2px
-    style Research fill:#ffedc8,stroke:#333,stroke-width:2px
-    style Notifier fill:#d8f8d8,stroke:#333,stroke-width:2px
-    style Customer fill:#ffffd0,stroke:#333,stroke-width:2px
+%% =========================
+%% フロー（矢印）
+%% =========================
+
+Customer --> A0 --> A1 --> A2
+A2 --> S1
+
+S1 -->|新規ケース作成| S2 --> C1 --> S1
+S1 -->|情報調査が必要| S3 --> R1 --> S1
+S1 -->|顧客回答指示| A3
+
+A3 -->|問題解決報告| S1 -->|ケースクローズ| C2 --> S1
+S1 -->|通知依頼| S4 --> N1 --> Customer
+
+%% =========================
+%% スタイル設定
+%% =========================
+
+style ASA fill:#f6e05e,stroke:#b7791f,stroke-width:1px
+style Supervisor fill:#90cdf4,stroke:#2b6cb0,stroke-width:1px
+style CaseMaster fill:#c6f6d5,stroke:#2f855a,stroke-width:1px
+style Research fill:#fbb6ce,stroke:#b83280,stroke-width:1px
+style Notifier fill:#fbd38d,stroke:#b7791f,stroke-width:1px
+style Customer fill:#e2e8f0,stroke:#4a5568,stroke-width:1px
+
 
 
 ## 🧠 シーケンス図
