@@ -109,3 +109,39 @@ graph TD
     B -- S4: 17.解決通知メール送信を依頼 --> E
     E -- S4: 18.御礼/解決通知メール送信 --> User
 ```
+
+sequenceDiagram
+    autonumber
+    participant Customer as 👤 顧客
+    participant ASA as ① ASA<br>(Agentforce Service Agent)
+    participant Supervisor as ② Supervisor Agent<br>(司令塔)
+    participant CaseMaster as ③ Case Master Agent<br>(Salesforceケース管理)
+    participant Research as ④ Research Agent<br>(外部ナレッジ検索)
+    participant Notifier as ⑤ Notifier Agent<br>(通知・メール送信)
+
+    %% --- ステップ1 ---
+    Customer->>ASA: チャット開始・問い合わせ内容を送信
+    ASA->>Customer: 挨拶とヒアリング開始
+    ASA->>ASA: 顧客情報と課題を構造化データとして整理
+
+    %% --- ステップ2 ---
+    ASA->>Supervisor: ヒアリング結果を引き渡し
+    Supervisor->>CaseMaster: ケース登録を指示
+    CaseMaster->>Supervisor: Salesforce上でケース作成完了（ケース番号返却）
+
+    %% --- ステップ3 ---
+    Supervisor->>Research: 外部ナレッジの調査依頼
+    Research->>Research: Web検索・要約生成
+    Research-->>Supervisor: 要約結果を返却
+    Supervisor->>ASA: 回答案を渡す
+    ASA->>Customer: 回答を自然な文章で提示
+
+    %% --- ステップ4 ---
+    Customer->>ASA: 解決に同意
+    ASA->>Supervisor: ケースクローズ報告
+    Supervisor->>CaseMaster: ケースクローズ指示
+    CaseMaster->>Supervisor: クローズ完了報告
+    Supervisor->>Notifier: 解決通知メール送信を依頼
+    Notifier->>Customer: 解決通知＆御礼メール送信
+
+    Note over ASA,Notifier: 各エージェントはSupervisor Agentを中心に協調動作し、<br>顧客体験をパーソナライズして最適化。
