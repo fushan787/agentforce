@@ -93,7 +93,7 @@ sequenceDiagram
     Notifier->>Customer: 解決通知＆御礼メール送信
 
     Note over ASA,Notifier: 各エージェントはSupervisor Agentを中心に協調動作し、<br>顧客体験をパーソナライズして最適化。
-
+```
 
 ```mermaid
 graph TD
@@ -152,3 +152,4 @@ graph TD
     class ASA,CaseMaster,Research,Notifier agent
     class Customer customer
     class Salesforce,Web external
+```
