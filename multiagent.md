@@ -56,6 +56,7 @@
 ---
 ## 🧠 構成図
 
+```mermaid
 graph TD
     subgraph "顧客"
         Customer((顧客))
@@ -76,17 +77,14 @@ graph TD
 
     %% --- 処理フロー ---
 
-    %% ステップ1：チャット受付とヒアリング
     Customer -- "1. チャット問合せ" --> ASA
     ASA -- "2. ヒアリング内容を連携" --> Supervisor
 
-    %% ステップ2：タスクの振り分けとケース起票
     Supervisor -- "3. ケース作成を指示" --> CaseMaster
     CaseMaster -- "4. Salesforceにケース登録" --> SalesforceDB
     SalesforceDB -- "5. ケース番号を返却" --> CaseMaster
     CaseMaster -- "6. ケース番号を報告" --> Supervisor
 
-    %% ステップ3：Webナレッジの検索と回答生成
     Supervisor -- "7. 調査を依頼" --> Research
     Research -- "8. Webを検索" --> WebSource
     WebSource -- "9. 関連情報を収集" --> Research
@@ -94,7 +92,6 @@ graph TD
     Supervisor -- "11. 回答案を連携" --> ASA
     ASA -- "12. 顧客へ回答" --> Customer
 
-    %% ステップ4：ケースクローズと解決後通知
     Customer -- "13. 問題解決に同意" --> ASA
     ASA -- "14. 解決を報告" --> Supervisor
     Supervisor -- "15. ケースクローズを指示" --> CaseMaster
@@ -109,6 +106,7 @@ graph TD
     style Research fill:#ffedc8,stroke:#333,stroke-width:2px
     style Notifier fill:#d8f8d8,stroke:#333,stroke-width:2px
     style Customer fill:#ffffd0,stroke:#333,stroke-width:2px
+
 
 ## 🧠 シーケンス図
 
