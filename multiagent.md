@@ -55,6 +55,7 @@
 
 ---
 
+```mermaid
 graph TD
     %% 設定とスタイル定義
     classDef agent fill:#e0f7fa,stroke:#00bcd4,stroke-width:2px;
@@ -107,3 +108,4 @@ graph TD
     C -- S4: 16.ケースをクローズ処理 --> SF
     B -- S4: 17.解決通知メール送信を依頼 --> E
     E -- S4: 18.御礼/解決通知メール送信 --> User
+```
