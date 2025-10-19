@@ -111,3 +111,73 @@ sequenceDiagram
     ORC->>ASA: ケースクローズ通知（内部イベント）
     ASA-->>User: 「処理完了」メッセージ送信
 ```
+```mermaid
+%%==================================================
+%% A2Aを使わない構成：Salesforce内ネイティブ連携
+%%==================================================
+sequenceDiagram
+    autonumber
+    box Internal Salesforce Org
+    participant User as 👤 ユーザー
+    participant ASA as 🤖 ASA<br>(Service Agent)
+    participant ORC as 🧭 オーケストレーター<br>(Primary Agent)
+    participant SEC as ⚙️ 処理エージェント<br>(Secondary Agent)
+    participant NOT as 📩 通知エージェント
+    participant Case as 📄 CaseOrch__c
+    end
+
+    Note over ASA,NOT: 🚀 A2Aなし構成（Flow / Agent Action で同期連携）
+
+    User->>ASA: 問い合わせ送信（チャット/メール）
+    ASA->>Case: Case + CaseOrch__c 作成
+    ASA->>ORC: Flow（Invoke Agent）で起動
+    ORC->>Case: 状況判断（自動 or 人間）
+    alt 自動処理
+        ORC->>SEC: Flow（Invoke Agent）で指示
+        SEC->>Case: 更新 / API呼出
+        SEC->>ORC: 完了通知（Flow戻り値）
+    else 人間対応
+        ORC->>Human: Task作成 / Slack通知
+    end
+    ORC->>NOT: Flow経由で通知指示
+    NOT->>User: 完了メール送信
+    ORC->>Case: 状態 = Closed 更新
+    ASA-->>User: 「完了しました」
+
+    Note over ORC,SEC: 🔒 Salesforce内で完結。A2A不要、低遅延、単純。
+```
+
+```mermaid
+%%==================================================
+%% A2Aを使う構成：疎結合／分散エージェント構成
+%%==================================================
+sequenceDiagram
+    autonumber
+    box Salesforce Org A
+    participant ASA2 as 🤖 ASA<br>(Service Agent)
+    participant ORC2 as 🧭 オーケストレーター<br>(Primary Agent)
+    end
+
+    box Salesforce Org B / 外部LLM
+    participant SEC2 as ⚙️ 処理エージェント<br>(Secondary Agent via A2A)
+    participant NOT2 as 📩 通知エージェント
+    end
+
+    participant A2A as 🌐 A2Aセッション<br>(JSON/REST/Context Bridge)
+    participant User2 as 👤 ユーザー
+
+    Note over ASA2,NOT2: 🌍 A2Aあり構成（疎結合・外部エージェント連携）
+
+    User2->>ASA2: 問い合わせ送信
+    ASA2->>ORC2: Flowでケース生成
+    ORC2->>A2A: A2Aセッション作成（Agent Context登録）
+    A2A->>SEC2: リクエスト転送（タスク＋コンテキスト）
+    SEC2->>A2A: 処理結果（JSON）返却
+    A2A->>ORC2: 結果受信（セッションID紐づけ）
+    ORC2->>A2A: 通知指示を転送
+    A2A->>NOT2: 顧客通知実行
+    NOT2->>User2: メール送信（外部経由）
+    ORC2->>ASA2: ケースクローズイベント発火
+
+    Note over A2A: ⚙️ 外部連携・非同期・セッション管理が必要
+```
